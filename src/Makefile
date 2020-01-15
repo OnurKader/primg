@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS= -Wall -Wextra -pedantic -g -O3 -std=c11
+CFLAGS= -Wall -Wextra -Wno-unused-variable -pedantic -g -O3 -std=c11
 CLIBS= -lm
 INSTALL_PATH?=/usr/local
 
-all: clean build
+all: build
 
 clean:
 	rm -f ../bin/*

@@ -44,6 +44,13 @@ void setRGB(
 	color->bb = bb;
 }
 
+void setBg(color_t* color, uint8_t r, uint8_t g, uint8_t b)
+{
+	color->br = r;
+	color->bg = g;
+	color->bb = b;
+}
+
 void getStr(color_t* color, char* str)
 {
 	sprintf(str,
