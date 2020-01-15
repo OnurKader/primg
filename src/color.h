@@ -21,7 +21,7 @@ void setColor(color_t* color, uint8_t r, uint8_t g, uint8_t b)
 	color->bb = b;
 }
 
-void setColorP(color_t* color, uint8_t* p)
+void setColorP(color_t* color, const uint8_t* p)
 {
 	color->fr = p[0];
 	color->fg = p[1];

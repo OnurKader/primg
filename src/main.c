@@ -72,13 +72,13 @@ int main(int argc, char** argv)
 		   ts.x_pixels,
 		   ts.y_pixels);
 
-	const uint8_t greyscale = (chann == 1 || chann == 2);	 // Less than 3 <3 💜
+	/* const uint8_t greyscale = (chann == 1 || chann == 2);	 // Less than 3 <3 💜 */
 
 	if(img_aspect >= 1.f && term_aspect >= 1.f)
 	{
 		uint32_t n = 0U;
 		// TODO Handle image being smaller than terminal window
-		for(unsigned char* p = img; p < img + image_size; ++n)
+		for(const unsigned char* p = img; p < img + image_size; ++n)
 		{
 			color_t color;
 			char str[64];
@@ -88,11 +88,9 @@ int main(int argc, char** argv)
 
 			// Skip the ratio of image to term
 			if(n % width == 0)
-				for(int i = 0; i < ts.rows * ceilf((float)height / (float)ts.y_pixels); ++i)
-					p += chann * width;
+				p += 8 * chann * width * (int)((float)width / (float)ts.cols);
 			else
-				for(int i = 0; i < ts.cols * ceilf((float)width / (float)ts.x_pixels); ++i)
-					p += chann;
+				p += 4 * chann * (int)((float)width / (float)ts.cols);
 		}
 	}
 	printf("%s", RESET);
