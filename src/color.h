@@ -10,6 +10,9 @@ typedef struct color_t
 	uint8_t br, bg, bb;
 } color_t;
 
+// TODO Take a greyscale in every function and check if it's greyscale, don't read all 3
+// channels. I think only setColorP is subject to change
+
 void setColor(color_t* color, uint8_t r, uint8_t g, uint8_t b)
 {
 	color->fr = r;

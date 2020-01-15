@@ -73,27 +73,13 @@ int main(int argc, char** argv)
 	// Resize
 	stbir_resize_uint8(img, width, height, 0, resized_img, r_width, r_height, 0, chann);
 
-	/* printf("Image: %s\nWidth: %d\nHeight: %d\nNo. of channels: %d\n", */
-	/* 	   filename, */
-	/* 	   width, */
-	/* 	   height, */
-	/* 	   chann); */
-
-	/* printf("rows: %hu\ncols: %hu\nx_pixels: %hu\ny_pixels: %hu\n", */
-	/* 	   ts.rows, */
-	/* 	   ts.cols, */
-	/* 	   ts.x_pixels, */
-	/* 	   ts.y_pixels); */
-
-	/* const uint8_t greyscale = (chann == 1 || chann == 2);	 // Less than 3 <3 💜 */
-
 	if(img_aspect >= 1.f && term_aspect >= 1.f)
 	{
 		uint32_t n = 0U;
 		// TODO Handle image being smaller than terminal window
 
 		for(const unsigned char* p = resized_img;
-			p < resized_img + resized_img_size - r_width * chann;
+			p < resized_img + resized_img_size - chann;
 			++n)
 		{
 			color_t color;
@@ -101,8 +87,16 @@ int main(int argc, char** argv)
 			setColorP(&color, p);
 			const unsigned char* next_row = p + (chann * r_width);
 			if(next_row < resized_img + resized_img_size)
+			{
 				setBg(&color, next_row[0], next_row[1], next_row[2]);
-			getStr(&color, str);
+				getStr(&color, str);
+			}
+			else
+			{
+				/* setBg(&color, 100, 225, 255); */
+				getStr(&color, str);
+				strcat(str, "\033[48;2m");
+			}
 			printf("%s\u2580", str);
 
 			if(n % r_width == 0)
@@ -113,7 +107,7 @@ int main(int argc, char** argv)
 	printf("%s\n", RESET);
 
 	stbi_image_free(img);
-	free(resized_img);
+	stbi_image_free(resized_img);
 	return 0;
 }
 
