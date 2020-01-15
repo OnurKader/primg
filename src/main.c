@@ -25,6 +25,12 @@ void getTermSize(TermSize*);
 
 int main(int argc, char** argv)
 {
+	if(argc < 2)
+	{
+		fprintf(stderr, "\t\033[31;1mWrong number of arguments\n");
+		usage();
+	}
+
 	int opt;
 	while((opt = getopt(argc, argv, "")) != -1)
 	{
@@ -36,8 +42,7 @@ int main(int argc, char** argv)
 	}
 
 	char filename[256] = "";
-	if(argc > 1)
-		strcat(filename, argv[optind]);
+	strcat(filename, argv[optind]);
 
 	TermSize ts;
 	getTermSize(&ts);
@@ -46,7 +51,7 @@ int main(int argc, char** argv)
 	unsigned char* img = stbi_load(filename, &width, &height, &chann, 0);
 	if(img == NULL)
 	{
-		fprintf(stderr, "\t\033[31;1mError while reading %s\033[m\n", filename);
+		fprintf(stderr, "\t\033[31;1mError while reading \"%s\"%s\n", filename, RESET);
 		exit(1);
 	}
 
@@ -82,12 +87,15 @@ int main(int argc, char** argv)
 			printf("%s\u2588", str);
 
 			// Skip the ratio of image to term
-			for(int i = 0; i < ceilf((float)width / (float)ts.x_pixels); ++i)
-				p += chann;
-			if(n % ts.cols == 0)
-				p += chann * ts.cols;
+			if(n % width == 0)
+				for(int i = 0; i < ts.rows * ceilf((float)height / (float)ts.y_pixels); ++i)
+					p += chann * width;
+			else
+				for(int i = 0; i < ts.cols * ceilf((float)width / (float)ts.x_pixels); ++i)
+					p += chann;
 		}
 	}
+	printf("%s", RESET);
 
 	/* for(unsigned char* p = img; p != img + image_size; p += chann) */
 	/* { */
@@ -104,7 +112,7 @@ int main(int argc, char** argv)
 
 void usage(void)
 {
-	fprintf(stderr, "Usage: primg \"filename.extension\"\n");
+	fprintf(stderr, "\tUsage: primg \"filename.extension\"\n%s", RESET);
 	exit(1);
 }
 
