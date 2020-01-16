@@ -90,18 +90,12 @@ int main(int argc, char** argv)
 			{
 				setBg(&color, next_row[0], next_row[1], next_row[2]);
 				getStr(&color, str);
+				printf("%s\u2580", str);
 			}
-			else
-			{
-				/* setBg(&color, 100, 225, 255); */
-				getStr(&color, str);
-				strcat(str, "\033[48;2m");
-			}
-			printf("%s\u2580", str);
 
+			p += chann;
 			if(n % r_width == 0)
 				p += chann * r_width;
-			p += chann;
 		}
 	}
 	printf("%s\n", RESET);
