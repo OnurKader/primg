@@ -24,7 +24,7 @@ the `INSTALL_PATH` environment variable
 ## Usage
 
 The most basic usage of the program is to call it with a filename.
-The image can be a PNG, JPG, and possibly a BMP. GIFs are not supported yet.
+The image can be a PNG, JPG, and BMP. GIFs or SVG's are not supported.
 
 `primg example.png`
 
