@@ -4,7 +4,14 @@ A C program to print an image to the terminal using ASCII block characters (â–€â
 
 ## Screenshots
 
-**_TODO_**
+![Space Render](imgs/space.png "Space")
+
+![Mountain Range](imgs/mountain.png "Mountains")
+
+![Low Resolution Planets](imgs/planets-low.png "Planets in a small window")
+
+![High Resolution Planets](imgs/planets-high.png "Planets in a bigger window")
+
 
 ## Building & Installation
 

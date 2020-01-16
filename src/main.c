@@ -39,6 +39,8 @@ int main(int argc, char** argv)
 		switch(opt)
 		{
 			case 'c': break;
+			case 'h':
+			case 'v':
 			default: usage();
 		}
 	}
@@ -107,7 +109,7 @@ int main(int argc, char** argv)
 
 void usage(void)
 {
-	fprintf(stderr, "\tUsage: primg \"filename.extension\"\n%s", RESET);
+	fprintf(stderr, "\tUsage: primg \"filename.extension\"\n%s\nVersion: v0.1", RESET);
 	exit(1);
 }
 
