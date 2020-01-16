@@ -68,15 +68,21 @@ int main(int argc, char** argv)
 	float h_const = (float)width / (float)ts.cols, v_const = (float)height / (float)ts.rows;
 
 	// Again just for horizontal
-	int r_width = ts.cols, r_height = height / h_const;
-	size_t resized_img_size = r_width * r_height * chann;
-	unsigned char* resized_img = malloc(resized_img_size);
+	int r_width, r_height;
+	size_t resized_img_size;
+	unsigned char* resized_img = NULL;
 
 	// Resize
-	stbir_resize_uint8(img, width, height, 0, resized_img, r_width, r_height, 0, chann);
 
-	if(img_aspect >= 1.f && term_aspect >= 1.f)
+	if(img_aspect >= 1.f)
 	{
+		r_width = ts.cols;
+		r_height = height / h_const;
+		resized_img_size = r_width * r_height * chann;
+		resized_img = malloc(resized_img_size);
+
+		stbir_resize_uint8(img, width, height, 0, resized_img, r_width, r_height, 0, chann);
+
 		uint32_t n = 0U;
 		// TODO Handle image being smaller than terminal window
 
@@ -88,18 +94,26 @@ int main(int argc, char** argv)
 			char str[64];
 			setColorP(&color, p);
 			const unsigned char* next_row = p + (chann * r_width);
-			if(next_row < resized_img + resized_img_size)
+			if(next_row < resized_img + resized_img_size - chann)
 			{
 				setBg(&color, next_row[0], next_row[1], next_row[2]);
 				getStr(&color, str);
 				printf("%s\u2580", str);
 			}
+			else
+			{
+				goto end;
+			}
 
 			p += chann;
-			if(n % r_width == 0)
+			if(n && !((n + 1) % r_width))
+			{
 				p += chann * r_width;
+				printf("\n");
+			}
 		}
 	}
+end:
 	printf("%s\n", RESET);
 
 	stbi_image_free(img);
