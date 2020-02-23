@@ -98,12 +98,21 @@ int main(int argc, char** argv)
 			{
 				setBg(&color, next_row[0], next_row[1], next_row[2]);
 				getStr(&color, str);
-				printf("%s\u2580", str);
+				// TODO Check alpha, if it's zero just skip one char. \033[D kind of thing
+				if(chann == 4)
+				{
+					if(*(p + 3U) != 0U)
+						printf("%s\u2580", str);
+					else
+						printf("%s ", RESET);
+				}
+				else
+				{
+					printf("%s\u2580", str);
+				}
 			}
 			else
-			{
 				goto end;
-			}
 
 			p += chann;
 			if(n && !((n + 1) % r_width))
@@ -123,13 +132,13 @@ end:
 
 void usage(void)
 {
-	fprintf(stderr, "\tUsage: primg \"filename.extension\"\n%s\nVersion: v0.1", RESET);
+	fprintf(stderr, "\tUsage: primg \"filename.extension\"\n%s\nVersion: v0.1\n", RESET);
 	exit(1);
 }
 
 void getTermSize(TermSize* ts)
 {
-	struct winsize size;
+	struct winsize size = {};
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
 	ts->rows = size.ws_row;
 	ts->cols = size.ws_col;
