@@ -14,5 +14,5 @@ clean:
 build: ../bin/main.o
 	$(CC) -o ../bin/primg $^ $(CFLAGS) $(CLIBS)
 
-install:
+install: ../bin/main.o
 	cp ../bin/primg $(INSTALL_PATH)/bin/primg

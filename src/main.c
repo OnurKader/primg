@@ -51,8 +51,8 @@ int main(int argc, char** argv)
 	TermSize ts;
 	getTermSize(&ts);
 
-	int width, height, chann;
-	unsigned char* img = stbi_load(filename, &width, &height, &chann, 0);
+	int img_width, img_height, chann;
+	unsigned char* img = stbi_load(filename, &img_width, &img_height, &chann, 0);
 
 	if(img == NULL)
 	{
@@ -60,12 +60,12 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	float img_aspect = (float)width / (float)height,
+	float img_aspect = (float)img_width / (float)img_height,
 		  term_aspect = (float)ts.x_pixels / (float)ts.y_pixels;
 
-	size_t image_size = width * height * chann;
+	size_t image_size = img_width * img_height * chann;
 
-	float h_const = (float)width / (float)ts.cols, v_const = (float)height / (float)ts.rows;
+	float h_const = (float)img_width / (float)ts.cols, v_const = (float)img_height / (float)ts.rows;
 
 	// Again just for horizontal
 	int r_width, r_height;
@@ -74,52 +74,55 @@ int main(int argc, char** argv)
 
 	// Resize
 
-	if(img_aspect >= 1.f)
+	if(img_aspect >= 1.f)	 // Image is Horizontal
 	{
 		r_width = ts.cols;
-		r_height = height / h_const;
-		resized_img_size = r_width * r_height * chann;
-		resized_img = malloc(resized_img_size);
+		r_height = img_height / h_const;
+	}
+	else
+	{	 // Image is Vertical
+		r_height = ts.rows;
+		r_width = img_width / v_const;
+	}
 
-		stbir_resize_uint8(img, width, height, 0, resized_img, r_width, r_height, 0, chann);
+	resized_img_size = r_width * r_height * chann;
+	resized_img = malloc(resized_img_size);
 
-		uint32_t n = 0U;
-		// TODO Handle image being smaller than terminal window
+	stbir_resize_uint8(img, img_width, img_height, 0, resized_img, r_width, r_height, 0, chann);
 
-		for(const unsigned char* p = resized_img;
-			p < resized_img + resized_img_size - chann;
-			++n)
+	uint32_t n = 0U;
+	// TODO Handle image being smaller than terminal window
+
+	for(const unsigned char* p = resized_img; p < resized_img + resized_img_size - chann; ++n)
+	{
+		color_t color;
+		char str[64];
+		setColorP(&color, p);
+		const unsigned char* next_row = p + (chann * r_width);
+		if(next_row < resized_img + resized_img_size - chann)
 		{
-			color_t color;
-			char str[64];
-			setColorP(&color, p);
-			const unsigned char* next_row = p + (chann * r_width);
-			if(next_row < resized_img + resized_img_size - chann)
+			setBg(&color, next_row[0], next_row[1], next_row[2]);
+			getStr(&color, str);
+			if(chann == 4)
 			{
-				setBg(&color, next_row[0], next_row[1], next_row[2]);
-				getStr(&color, str);
-				// TODO Check alpha, if it's zero just skip one char. \033[D kind of thing
-				if(chann == 4)
-				{
-					if(*(p + 3U) != 0U)
-						printf("%s\u2580", str);
-					else
-						printf("%s ", RESET);
-				}
-				else
-				{
+				if(*(p + 3U) != 0U)
 					printf("%s\u2580", str);
-				}
+				else
+					printf("%s ", RESET);
 			}
 			else
-				goto end;
-
-			p += chann;
-			if(n && !((n + 1) % r_width))
 			{
-				p += chann * r_width;
-				printf("\n");
+				printf("%s\u2580", str);
 			}
+		}
+		else
+			goto end;
+
+		p += chann;
+		if(n && !((n + 1) % r_width))
+		{
+			p += chann * r_width;
+			printf("\n");
 		}
 	}
 end:
