@@ -60,8 +60,7 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	float img_aspect = (float)img_width / (float)img_height,
-		  term_aspect = (float)ts.x_pixels / (float)ts.y_pixels;
+	float img_aspect = (float)img_width / (float)img_height;
 
 	size_t image_size = img_width * img_height * chann;
 
@@ -72,26 +71,32 @@ int main(int argc, char** argv)
 	size_t resized_img_size;
 	unsigned char* resized_img = NULL;
 
-	// Resize
-
-	if(img_aspect >= 1.f)	 // Image is Horizontal
+	// If the image is smaller than the terminal, don't do anything
+	if(img_width < ts.cols && img_height < ts.rows)
 	{
-		r_width = ts.cols;
-		r_height = img_height / h_const;
+		r_width = img_width;
+		r_height = img_height;
 	}
 	else
-	{	 // Image is Vertical
-		r_height = ts.rows;
-		r_width = img_width / v_const;
+	{
+		// Resize
+		if(img_aspect >= 1.f)	 // Image is Horizontal
+		{
+			r_width = ts.cols;
+			r_height = img_height / h_const;
+		}
+		else
+		{	 // Image is Vertical
+			r_height = ts.rows;
+			r_width = img_width / v_const;
+		}
 	}
-
 	resized_img_size = r_width * r_height * chann;
 	resized_img = malloc(resized_img_size);
 
 	stbir_resize_uint8(img, img_width, img_height, 0, resized_img, r_width, r_height, 0, chann);
 
 	uint32_t n = 0U;
-	// TODO Handle image being smaller than terminal window
 
 	for(const unsigned char* p = resized_img; p < resized_img + resized_img_size - chann; ++n)
 	{
